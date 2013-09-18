@@ -1,9 +1,9 @@
 ESEA Scraper (TF2)
 ==================
 
-Scrapes data from the ESEA website for all Team Fortress 2 matches in Seasons 9-14, from
-June 26, 2011 to September 6, 2011. This project uses Python and the web crawling/scraping
-framework Scrapy.
+Scrapes data from the [ESEA website](http://play.esea.net/) for all Team Fortress 2 matches
+in Seasons 9-14, from June 26, 2011 to September 6, 2013. This project uses Python and the
+web crawling/scraping framework Scrapy.
 
 Instructions
 ------------

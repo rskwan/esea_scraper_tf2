@@ -13,21 +13,22 @@ class MatchSpider(CrawlSpider):
 
     name = 'play.esea.net'
     allowed_domains = ['play.esea.net']
-    schedule_format = """http://play.esea.net/index.php?s=league&d=schedule&date={0}
-                         &game_id=43&division_level=all"""  
-    start_urls = [schedule_format.format('2011-06-26')]
+    schedule_url = ('http://play.esea.net/index.php?s=league&d=schedule&date=2011-06-26'
+                    '&game_id=43&division_level=all')  
+    start_urls = [schedule_url]
 
     # regexes for links
     schedule_2011 = r'date\=2011\-(0[6-9]|1[0-2])\-[0-3][0-9]'
     schedule_2012 = r'date\=2012\-[0-1][0-9]\-[0-3][0-9]'
     schedule_2013 = r'date\=2013\-(0[1-8]\-[0-3][0-9]|09\-0[1-6])'
-    match = r'index.php\?s\=stats\&d\=match\&id\=\d+'
+    match1 = r'index.php\?s\=stats\&d\=match\&id\=\d+'
+    match2 = r'index.php\?d\=match\&id\=\d+\&s\=stats'
 
     rules = (
         Rule(SgmlLinkExtractor(allow=(schedule_2011, ))),
         Rule(SgmlLinkExtractor(allow=(schedule_2012, ))),
         Rule(SgmlLinkExtractor(allow=(schedule_2013, ))),
-        Rule(SgmlLinkExtractor(allow=(match, )), callback='parse_match'),
+        Rule(SgmlLinkExtractor(allow=(match1, match2)), callback='parse_match'),
     )
 
     def get_player_row(self, row):
@@ -72,7 +73,11 @@ class MatchSpider(CrawlSpider):
             team_id = int(m.group(0))
         else:
             team_id = None
-        team_score = int(row.select('td[4]/text()').extract()[0])
+        # golden cap rule
+        score_elem = row.select('td[4]/text()').extract()
+        if len(score_elem) == 0:
+            score_elem = row.select('td[5]/text()').extract()
+        team_score = int(score_elem[0])
         return (team_id, team_score)
         
     def get_teams(self, selector, forfeit):
